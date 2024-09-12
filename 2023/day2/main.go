@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+type ColorMap map[string]int
+
 func getGameId(text string) (int, error) {
 	gameParts := strings.Split(text, " ")
 	gameID, err := strconv.Atoi(gameParts[1])
@@ -19,7 +21,7 @@ func getGameId(text string) (int, error) {
 	return gameID, nil
 }
 
-func isColorValid(color string, ballCount int, maxBallsPerColor map[string]int) bool {
+func isColorValid(color string, ballCount int, maxBallsPerColor ColorMap) bool {
 	maxAllowed, found := maxBallsPerColor[color]
 	return !found || ballCount <= maxAllowed
 }
@@ -36,9 +38,33 @@ func transformColorCount(colorCount string) (int, string) {
 	return ballCount, color
 }
 
-func checkValidGame(data string) bool {
+func updateMinimalBallsCount(minBallsPerColor ColorMap, ballCount int, color string) ColorMap {
+	currentMinAmount, found := minBallsPerColor[color]
+
+	if found {
+		if currentMinAmount < ballCount {
+			minBallsPerColor[color] = ballCount
+		}
+	}
+
+	return minBallsPerColor
+}
+
+func calcualatePowerOfSetCubes(minBallsPerColor ColorMap) int {
+	power := 1
+
+	for _, v := range minBallsPerColor {
+		power *= v
+	}
+
+	return power
+}
+
+func calculateGameStats(data string) (bool, int) {
 	gameRounds := strings.Split(data, "; ")
 	maxBallsPerColor := map[string]int{"red": 12, "blue": 13, "green": 13}
+	minBallsPerColor := map[string]int{"red": 0, "blue": 0, "green": 0}
+
 	isGameValid := true
 
 	for _, round := range gameRounds {
@@ -46,13 +72,15 @@ func checkValidGame(data string) bool {
 
 		for _, colorCount := range colorCounts {
 			ballCount, color := transformColorCount(colorCount)
+			minBallsPerColor = updateMinimalBallsCount(minBallsPerColor, ballCount, color)
 
 			if !isColorValid(color, ballCount, maxBallsPerColor) {
 				isGameValid = false
 			}
 		}
 	}
-	return isGameValid
+
+	return isGameValid, calcualatePowerOfSetCubes(minBallsPerColor)
 }
 
 func main() {
@@ -63,7 +91,8 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 	defer file.Close()
-	total := 0
+	totalValid := 0
+	totalPower := 0
 
 	for scanner.Scan() {
 		text := scanner.Text()
@@ -78,12 +107,15 @@ func main() {
 			return
 		}
 
-		isValid := checkValidGame(gameData)
+		isValid, power := calculateGameStats(gameData)
 		if isValid {
-			total += gameID
+			totalValid += gameID
 		}
+
+		totalPower += power
 
 	}
 
-	fmt.Print(total)
+	fmt.Println("total Power ", totalPower)
+	fmt.Println("total valid games ", totalValid)
 }
