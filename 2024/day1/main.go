@@ -37,7 +37,7 @@ func part1() {
 	sort.Ints(rightNums)
 
 	if len(leftNums) != len(rightNums) {
-		panic("Arrays have different lenght")
+		panic("Arrays have different length")
 	}
 
 	total := 0
