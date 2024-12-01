@@ -62,18 +62,9 @@ func part1() {
 
 func countAppearances(list []int) map[int]int {
 	appearances := make(map[int]int)
-
-	for i := 0; i < len(list); i++ {
-		num := list[i]
-		val, ok := appearances[num]
-
-		if ok {
-			appearances[num] = val + 1
-		} else {
-			appearances[num] = 1
-		}
+	for _, num := range list {
+		appearances[num]++
 	}
-
 	return appearances
 }
 
