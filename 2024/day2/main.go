@@ -9,7 +9,7 @@ import (
 )
 
 func readFile() [][]int {
-	file, err := os.Open("day2.test.txt")
+	file, err := os.Open("day2.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -40,17 +40,23 @@ func readFile() [][]int {
 }
 
 func isSafe(isIncreasing bool, current, next int) bool {
-	if isIncreasing == true {
-		if !(next-current <= 3 && next-current > 0) {
-			return false
+	if isIncreasing {
+		return next-current <= 3 && next-current > 0
+	}
+	return current-next <= 3 && current-next > 0
+}
+
+func remove(slice []int, index int) []int {
+	var newArr []int
+
+	for i, num := range slice {
+		if i == index {
+			continue
 		}
-	} else {
-		if !(current-next <= 3 && current-next > 0) {
-			return false
-		}
+		newArr = append(newArr, num)
 	}
 
-	return true
+	return newArr
 }
 
 func part1() {
@@ -69,7 +75,7 @@ func part1() {
 		isLineSafe := true
 
 		for i := 0; i < len(line)-1; i++ {
-			if isSafe(isIncreasing, line[i], line[i+1]) == false {
+			if !isSafe(isIncreasing, line[i], line[i+1]) {
 				isLineSafe = false
 				break
 			}
@@ -88,11 +94,39 @@ func part1() {
 
 func part2() {
 	input := readFile()
+	safeCount := 0
 
-	fmt.Println(input)
+	for _, line := range input {
+		originalLine := make([]int, len(line))
+		copy(originalLine, line)
+
+		for j := 0; j < len(originalLine); j++ {
+			newLine := remove(originalLine, j)
+
+			isIncreasing := false
+			if newLine[1] > newLine[0] {
+				isIncreasing = true
+			}
+
+			isLineSafe := true
+			for i := 0; i < len(newLine)-1; i++ {
+				if !isSafe(isIncreasing, newLine[i], newLine[i+1]) {
+					isLineSafe = false
+					break
+				}
+			}
+
+			if isLineSafe {
+				safeCount++
+				break
+			}
+		}
+	}
+
+	fmt.Println("Part 2 answer is:", safeCount)
 }
 
 func main() {
-	// part1()
+	part1()
 	part2()
 }
