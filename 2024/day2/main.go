@@ -9,7 +9,7 @@ import (
 )
 
 func readFile() [][]int {
-	file, err := os.Open("day2.txt")
+	file, err := os.Open("day2.test.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -20,8 +20,7 @@ func readFile() [][]int {
 	var nums [][]int
 	for scanner.Scan() {
 		text := scanner.Text()
-		text = strings.TrimSpace(text)
-		splittedLine := strings.Split(text, " ")
+		splittedLine := strings.Fields(text)
 
 		var line []int
 
@@ -40,20 +39,28 @@ func readFile() [][]int {
 
 }
 
+func isSafe(isIncreasing bool, current, next int) bool {
+	if isIncreasing == true {
+		if !(next-current <= 3 && next-current > 0) {
+			return false
+		}
+	} else {
+		if !(current-next <= 3 && current-next > 0) {
+			return false
+		}
+	}
+
+	return true
+}
+
 func part1() {
-	nums := readFile()
+	input := readFile()
 
 	safeCount := 0
 
-	for _, line := range nums {
+	for _, line := range input {
 
 		isIncreasing := false
-
-		// 1 element line is always safe
-		if len(line) == 1 {
-			safeCount += 1
-			continue
-		}
 
 		if line[1] > line[0] {
 			isIncreasing = true
@@ -62,20 +69,9 @@ func part1() {
 		isLineSafe := true
 
 		for i := 0; i < len(line)-1; i++ {
-			current := line[i]
-			next := line[i+1]
-
-			if isIncreasing == true {
-
-				if !(next-current <= 3 && next-current > 0) {
-					isLineSafe = false
-				}
-
-			} else {
-				if !(current-next <= 3 && current-next > 0) {
-					isLineSafe = false
-				}
-
+			if isSafe(isIncreasing, line[i], line[i+1]) == false {
+				isLineSafe = false
+				break
 			}
 
 		}
@@ -90,6 +86,13 @@ func part1() {
 
 }
 
+func part2() {
+	input := readFile()
+
+	fmt.Println(input)
+}
+
 func main() {
-	part1()
+	// part1()
+	part2()
 }
