@@ -97,11 +97,8 @@ func part2() {
 	safeCount := 0
 
 	for _, line := range input {
-		originalLine := make([]int, len(line))
-		copy(originalLine, line)
-
-		for j := 0; j < len(originalLine); j++ {
-			newLine := remove(originalLine, j)
+		for j := 0; j < len(line); j++ {
+			newLine := remove(line, j)
 
 			isIncreasing := false
 			if newLine[1] > newLine[0] {
