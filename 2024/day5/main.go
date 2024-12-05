@@ -75,6 +75,21 @@ func isUpdateValid(update []int, rules OrderingRules) bool {
 
 }
 
+func reorderUpdates(update []int, rules OrderingRules) []int {
+	reordered := make([]int, len(update))
+	copy(reordered, update)
+
+	for i := 0; i < len(reordered); i++ {
+		for j := i + 1; j < len(reordered); j++ {
+			if slices.Contains(rules[reordered[i]], reordered[j]) {
+				reordered[i], reordered[j] = reordered[j], reordered[i]
+			}
+		}
+	}
+
+	return reordered
+}
+
 func part1() {
 	orderingRulesData, updates := readFile()
 	orderingRules := mapRules(orderingRulesData)
@@ -90,6 +105,23 @@ func part1() {
 	fmt.Println("Answer to part 1", total)
 }
 
+func part2() {
+	orderingRulesData, updates := readFile()
+	orderingRules := mapRules(orderingRulesData)
+
+	total := 0
+
+	for _, update := range updates {
+		if !isUpdateValid(update, orderingRules) {
+			reorderedUpdate := reorderUpdates(update, orderingRules)
+			total += reorderedUpdate[len(reorderedUpdate)/2]
+		}
+	}
+
+	fmt.Println("Answer to part 2", total)
+}
+
 func main() {
 	part1()
+	part2()
 }
