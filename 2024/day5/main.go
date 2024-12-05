@@ -4,22 +4,23 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
 
-type OrderingRules [][]int
-type CoordinateList [][]int
+type IntGrid [][]int
+type OrderingRules map[int][]int
 
-func readFile() (OrderingRules, CoordinateList) {
-	file, err := os.Open("day5.test.txt")
+func readFile() (IntGrid, IntGrid) {
+	file, err := os.Open("day5.txt")
 	if err != nil {
 		panic(err)
 	}
 
 	scanner := bufio.NewScanner(file)
-	var orderingRules OrderingRules
-	var coordinateList CoordinateList
+	var orderingRules IntGrid
+	var updates IntGrid
 	defer file.Close()
 
 	for scanner.Scan() {
@@ -42,20 +43,51 @@ func readFile() (OrderingRules, CoordinateList) {
 				coordinate = append(coordinate, num)
 			}
 
-			coordinateList = append(coordinateList, coordinate)
+			updates = append(updates, coordinate)
 		}
 
 	}
 
-	return orderingRules, coordinateList
+	return orderingRules, updates
+
+}
+
+func mapRules(rules IntGrid) OrderingRules {
+	var rulesMapping = make(OrderingRules)
+	for _, rule := range rules {
+		y, x := rule[0], rule[1]
+		rulesMapping[x] = append(rulesMapping[x], y)
+	}
+
+	return rulesMapping
+}
+
+func isUpdateValid(update []int, rules OrderingRules) bool {
+	for i := 0; i < len(update); i++ {
+		for j := i + 1; j < len(update); j++ {
+			if slices.Contains(rules[update[i]], update[j]) {
+				return false
+
+			}
+		}
+	}
+	return true
 
 }
 
 func part1() {
-	orderingRules, coordinateList := readFile()
+	orderingRulesData, updates := readFile()
+	orderingRules := mapRules(orderingRulesData)
 
-	fmt.Println("Part 1 answer:", orderingRules)
-	fmt.Println("Part 2 answer:", coordinateList)
+	total := 0
+
+	for _, update := range updates {
+		if isUpdateValid(update, orderingRules) {
+			total += update[len(update)/2]
+		}
+	}
+
+	fmt.Println("Answer to part 1", total)
 }
 
 func main() {
