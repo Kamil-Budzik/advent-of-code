@@ -13,7 +13,7 @@ type IntGrid [][]int
 type OrderingRules map[int][]int
 
 func readFile() (IntGrid, IntGrid) {
-	file, err := os.Open("day5.txt")
+	file, err := os.Open("day5.test.txt")
 	if err != nil {
 		panic(err)
 	}
