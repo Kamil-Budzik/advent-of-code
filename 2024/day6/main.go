@@ -118,6 +118,73 @@ func part1() {
 
 }
 
+func simulateGuardPath(matrix Matrix, x int, y int, direction rune, visited map[string]bool) (Matrix, bool) {
+	var newDirection rune = direction
+	newX, newY := x, y
+
+	positionKey := fmt.Sprintf("%d,%d,%c", x, y, direction)
+
+	if visited[positionKey] {
+		return matrix, true
+	} else {
+		visited[positionKey] = true
+	}
+
+	switch direction {
+	case TOP:
+		newX = x - 1
+	case RIGHT:
+		newY = y + 1
+	case BOTTOM:
+		newX = x + 1
+	case LEFT:
+		newY = y - 1
+	}
+
+	if didEscape(newX, newY, len(matrix), len(matrix[0])) {
+		matrix[x][y] = 'X'
+		return matrix, false
+	}
+
+	if didEncounterObstacle(matrix[newX][newY]) {
+		newDirection = getNewDirection(direction)
+		matrix[x][y] = 'X'
+		return simulateGuardPath(matrix, x, y, newDirection, visited)
+	}
+
+	matrix[newX][newY] = direction
+	matrix[x][y] = 'X'
+	return simulateGuardPath(matrix, newX, newY, newDirection, visited)
+}
+
+func part2() {
+	matrix, startX, startY, direction := readFile()
+
+	total := 0
+
+	for x, rows := range matrix {
+		for y, char := range rows {
+			if char == '.' {
+				newMatrix := make([][]rune, len(matrix))
+				for i := range matrix {
+					newMatrix[i] = append([]rune(nil), matrix[i]...)
+				}
+
+				newMatrix[x][y] = '#'
+
+				_, foundLoop := simulateGuardPath(newMatrix, startX, startY, direction, make(map[string]bool))
+				if foundLoop {
+					total++
+				}
+			}
+		}
+	}
+
+	fmt.Println("Answer to part 2:", total)
+
+}
+
 func main() {
-	part1()
+	// part1()
+	part2()
 }
