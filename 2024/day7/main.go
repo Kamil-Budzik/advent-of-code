@@ -28,6 +28,18 @@ func convertStringToIntArray(parts string) []int {
 	return nums
 }
 
+func concatInts(a, b int) int {
+	x := strconv.Itoa(a)
+	y := strconv.Itoa(b)
+
+	result, err := strconv.Atoi(x + y)
+	if err != nil {
+		fmt.Println("Failed to concat strings", a, b)
+	}
+
+	return result
+}
+
 func readFile() []Equation {
 	file, err := os.Open("day7.txt")
 	if err != nil {
@@ -66,7 +78,8 @@ type TreeNode struct {
 }
 
 func checkPossibleEquations(node *TreeNode) bool {
-	if node.value == node.expectedResult {
+	if node.index == len(node.nums) && node.value == node.expectedResult {
+		fmt.Println(node.expectedResult, node.nums)
 		return true
 	}
 
@@ -90,10 +103,19 @@ func checkPossibleEquations(node *TreeNode) bool {
 		expectedResult: node.expectedResult,
 	}
 
-	return checkPossibleEquations(addNode) || checkPossibleEquations(multiplyNode)
+	// This is additional option for part 2
+	concatNode := &TreeNode{
+		value:          concatInts(node.value, nextNode),
+		index:          node.index + 1,
+		nums:           node.nums,
+		expectedResult: node.expectedResult,
+	}
+
+	// Remove concatNode for part1 answer
+	return checkPossibleEquations(addNode) || checkPossibleEquations(multiplyNode) || checkPossibleEquations(concatNode)
 }
 
-func part1() {
+func part2() {
 	equations := readFile()
 
 	total := 0
@@ -111,10 +133,10 @@ func part1() {
 		}
 	}
 
-	fmt.Println("Answer to part 1:", total)
+	fmt.Println("Answer to part 2:", total)
 
 }
 
 func main() {
-	part1()
+	part2()
 }
