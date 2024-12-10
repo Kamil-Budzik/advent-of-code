@@ -102,6 +102,51 @@ func part1() {
 	fmt.Println("Answer to part 1", total)
 }
 
+func dfs(grid Matrix, x, y, currentHeight int, visited map[[2]int]bool) int {
+	H := len(grid)
+	W := len(grid[0])
+
+	if !isInBounds(x, y, W, H) || visited[[2]int{x, y}] || grid[x][y] != currentHeight {
+		return 0
+	}
+
+	if currentHeight == 9 {
+		return 1
+	}
+
+	visited[[2]int{x, y}] = true
+	totalPaths := 0
+
+	for _, dir := range directions {
+		newX, newY := x+dir[0], y+dir[1]
+		totalPaths += dfs(grid, newX, newY, currentHeight+1, visited)
+	}
+
+	visited[[2]int{x, y}] = false
+
+	return totalPaths
+}
+
+func part2() {
+	grid := readFile()
+
+	H := len(grid)
+	W := len(grid[0])
+	total := 0
+
+	for x := 0; x < H; x++ {
+		for y := 0; y < W; y++ {
+			if grid[x][y] == 0 {
+				visited := make(map[[2]int]bool)
+				total += dfs(grid, x, y, 0, visited)
+			}
+		}
+	}
+
+	fmt.Println("Answer to part 2:", total)
+}
+
 func main() {
 	part1()
+	part2()
 }
