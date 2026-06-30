@@ -2,7 +2,6 @@
 int currDial = 50;
 int total = 0;
 
-
 foreach (var line in File.ReadLines("./day1.txt"))
 {
     char direction = line[0];
@@ -13,7 +12,6 @@ foreach (var line in File.ReadLines("./day1.txt"))
 }
 
 Console.WriteLine(total);
-
 
 int CalcTheDial(char dir, int num)
 {
