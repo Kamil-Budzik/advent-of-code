@@ -1,3 +1,53 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
-Console.WriteLine("SIema");
+﻿
+int currDial = 50;
+int total = 0;
+
+
+foreach (var line in File.ReadLines("./day1.test.txt"))
+{
+    Console.WriteLine(line);
+    char direction = line[0];
+    int steps = int.Parse(line[1..]);
+    currDial = CalcTheDial(direction, steps);
+    // answer to part 1
+    // if (currDial == 0) total++;
+}
+
+Console.WriteLine(total);
+
+
+int CalcTheDial(char dir, int num)
+{
+    int value = currDial;
+
+    for (int i = 0; i < num; i++)
+    {
+
+        if (dir == 'L' && value == 0)
+        {
+            value = 99;
+            continue;
+        }
+
+        if (dir == 'R' && value == 99)
+        {
+            value = 0;
+            continue;
+        }
+
+
+        if (dir == 'L')
+        {
+            value -= 1;
+        }
+        else
+        {
+            value += 1;
+        }
+
+
+    }
+
+
+    return value;
+}
