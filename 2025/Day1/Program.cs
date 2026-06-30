@@ -3,9 +3,8 @@ int currDial = 50;
 int total = 0;
 
 
-foreach (var line in File.ReadLines("./day1.test.txt"))
+foreach (var line in File.ReadLines("./day1.txt"))
 {
-    Console.WriteLine(line);
     char direction = line[0];
     int steps = int.Parse(line[1..]);
     currDial = CalcTheDial(direction, steps);
@@ -32,6 +31,7 @@ int CalcTheDial(char dir, int num)
         if (dir == 'R' && value == 99)
         {
             value = 0;
+            total++;
             continue;
         }
 
@@ -39,6 +39,7 @@ int CalcTheDial(char dir, int num)
         if (dir == 'L')
         {
             value -= 1;
+            if (value == 0) total++;
         }
         else
         {
